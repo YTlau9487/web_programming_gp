@@ -1,20 +1,22 @@
 <div class="h-svh w-full bg-linear-to-tr from-stone-200 to-slate-300 flex justify-center items-center">
 	<!-- Registration box -->
-	<div
+	<form method="POST" action="?/login" autocomplete="off"
 		class="bg-[#FFFFFF]/60 w-[450px] min-h-[25%] rounded-lg backdrop-blur-sm p-4 md:p-8 text-black text-center shadow-[0px_0px_5px_2px_rgba(100,100,111,0.15)]"
 	>
 		<h1 class="text-3xl max-md:text-2xl mb-4">Login</h1>
 
 		<div class="relative mb-4">
 			<input
-				type="text"
+				type="email"
+				name="email"
 				class="bg-white border-white/50 rounded-lg w-full p-2 text-sm"
 				placeholder="Email address"
+				required
 			/>
 		</div>
 
 		<div class="relative mb-4">
-			<input type="password" class="bg-white border-white/50 rounded-lg w-full p-2 text-sm" placeholder="Password"/>
+			<input type="password" name="password" class="bg-white border-white/50 rounded-lg w-full p-2 text-sm" placeholder="Password" required/>
 		</div>
 
 		<button
@@ -26,5 +28,5 @@
 		<span class="block text-sm mt-5"
 			>Don't have any account? <a href="/registration" class="hover:underline">Sign up</a></span
 		>
-	</div>
+	</form>
 </div>
