@@ -37,6 +37,7 @@
 		"vite": "^7.2.2"
 	},
 	"dependencies": {
+		"argon2": "^0.44.0",
 		"nanoid": "^5.1.6"
 	}
 }
