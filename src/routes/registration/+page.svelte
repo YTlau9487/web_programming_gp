@@ -1,3 +1,7 @@
+<script lang="ts">
+	export let form;
+</script>
+
 <div
 	class="h-svh w-full bg-linear-to-tr from-stone-200 to-slate-300 flex justify-center items-center"
 >
@@ -44,6 +48,14 @@
 				<option value="seller">Seller</option>
 			</select>
 		</div>
+
+		{#if form?.error}
+			<p class="text-red-500 mb-2">{form.error}</p>
+		{/if}
+
+		{#if form?.success}
+			<p class="text-green-600 mb-2">Registration successful!</p>
+		{/if}
 
 		<button
 			type="submit"
