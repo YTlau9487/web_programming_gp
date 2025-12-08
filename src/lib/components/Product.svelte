@@ -12,7 +12,7 @@
   };
 </script>
 
-<div class="max-w-sm rounded overflow-hidden shadow-lg">
+<div class="max-w-sm rounded overflow-hidden shadow-lg mx-4">
   <img class="w-full" src={product.imageUrl} alt={product.name} />
   <div class="px-6 py-4">
     <div class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
