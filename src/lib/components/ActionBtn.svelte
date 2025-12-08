@@ -16,7 +16,7 @@
   </button>
 
   <!-- Cart Button -->
-  <button
+  <!-- <button
     onclick={() => onOpenCart?.()}
     class="relative p-3 bg-white rounded-lg border border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-shadow shadow-sm"
     aria-label="Open cart"
@@ -28,4 +28,4 @@
       </span>
     {/if}
   </button>
-</div>
+</div> -->
