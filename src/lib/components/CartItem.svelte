@@ -1,4 +1,5 @@
 <script>
+	const { product } = $props();
 	let count = $state(0);
 
 	function increment() {
@@ -10,13 +11,13 @@
 	}
 </script>
 
-<div class="max-w-3xl bg-white rounded-3xl shadow-sm border border-gray-100 px-6 py-4">
+<div class="max-w-3xl mb-4 bg-white rounded-3xl shadow-sm border border-gray-100 px-6 py-4">
 	<div class="flex items-center gap-6">
-		<img src="product.png" alt="Product" class="h-24 w-24 rounded-xl object-cover" />
+		<img src={product.image} alt={product.name} class="h-24 w-24 rounded-xl object-cover" />
 
 		<div class="flex-1">
-			<h3 class="text-lg font-semibold text-gray-900">Something 3000</h3>
-			<p class="mt-1 text-base font-medium text-gray-700">$0.00</p>
+			<h3 class="text-lg font-semibold text-gray-900">{product.name}</h3>
+			<p class="mt-1 text-base font-medium text-gray-700">${product.price}</p>
 
 			<div class="mt-4 flex items-center gap-3">
 				<button
