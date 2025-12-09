@@ -1,24 +1,36 @@
-<script>
-	import Header from '$lib/components/Header.svelte';
-	import SearchHeader from '$lib/components/SearchHeader.svelte';
+<script lang="ts">
+  import Header from '$lib/components/Header.svelte';
+  import SearchHeader from '$lib/components/SearchHeader.svelte';
+  import Tabs from '$lib/components/Tabs.svelte';
+  import Product from '$lib/components/Product.svelte';
+  import data from '$lib/data/products.json';
 
-	import Tabs from '$lib/components/Tabs.svelte';
-	import Product from '$lib/components/Product.svelte';
+  const products = data.products;
+
+  let searchTerm = '';
+
+  $: filteredProducts =
+    searchTerm.trim() === ''
+      ? products
+      : products.filter((p) => {
+          const q = searchTerm.toLowerCase();
+          return (
+            p.title.toLowerCase().includes(q) ||
+            p.category.toLowerCase().includes(q)
+          );
+        });
 </script>
 
 <Header />
-<!-- need to pass the route to the action btn -->
-<SearchHeader></SearchHeader>
+
+<SearchHeader bind:searchTerm />
+
 <div class="m-8">
-<Tabs items={['pending', 'shipped', 'delivered']} />
+  <Tabs items={['pending', 'shipped', 'delivered']} />
 </div>
 
-
-
-<!-- need to filter by tabs then show the product -->
-
-<div class="flex flex-wrap ">
-<Product></Product>
-<Product></Product>
-<Product></Product>
+<div class="flex flex-wrap justify-center gap-8">
+  {#each filteredProducts as product}
+    <Product {product} />
+  {/each}
 </div>
