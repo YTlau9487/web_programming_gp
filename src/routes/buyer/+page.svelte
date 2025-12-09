@@ -3,7 +3,8 @@
   import SearchHeader from '$lib/components/SearchHeader.svelte';
   import Tabs from '$lib/components/Tabs.svelte';
   import Product from '$lib/components/Product.svelte';
-  import data from '$lib/data/products.json';
+
+  export let data;
 
   const products = data.products;
 
@@ -21,7 +22,7 @@
         });
 </script>
 
-<Header />
+<Header user={data.user} />
 
 <SearchHeader bind:searchTerm />
 
