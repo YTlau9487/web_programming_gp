@@ -38,7 +38,7 @@
 	{#each list as item}
 		<button
 			on:click={() => select(item)}
-			class="min-w-[100px] px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 whitespace-nowrap
+			class="min-w-[100px] px-6 py-3 rounded-lg cursor-pointer font-medium text-sm transition-all duration-200 whitespace-nowrap
 			       {value === item.value
 				? 'bg-white text-gray-900 shadow-sm font-semibold'
 				: 'text-gray-600 hover:text-gray-900 hover:bg-gray-300'}"
