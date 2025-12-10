@@ -1,6 +1,7 @@
 import { db } from './index';
 import { product, productImage, productDimensions, productReview, buyerOrder, orderItem } from './schema';
 import { eq } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 
 export async function getAllProducts() {
   return await db.select().from(product);

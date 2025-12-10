@@ -10,12 +10,36 @@
 
 	// 1 = Shipping, 2 = Payment, 3 = Success
 	let currentStep = $state(1);
+	let isSubmitting = $state(false);
 
-	// cart is a store of CartItemType[]
 	const items = $derived($cart as CartItemType[]);
 	const shipping = 9.99;
 
+	let shippingData = $state({
+		fullName: '',
+		address: '',
+		city: '',
+		state: '',
+		zipCode: '',
+		phone: ''
+	});
+
+	let paymentData = $state({
+		cardNumber: '',
+		cardExpiry: '',
+		cardCvv: '',
+		cardHolder: ''
+	});
+
 	function goToPayment() {
+		const fullName = (document.getElementById('fullName') as HTMLInputElement)?.value || '';
+		const address = (document.getElementById('address') as HTMLInputElement)?.value || '';
+		const city = (document.getElementById('city') as HTMLInputElement)?.value || '';
+		const state = (document.getElementById('state') as HTMLInputElement)?.value || '';
+		const zipCode = (document.getElementById('zipCode') as HTMLInputElement)?.value || '';
+		const phone = (document.getElementById('phone') as HTMLInputElement)?.value || '';
+
+		shippingData = { fullName, address, city, state, zipCode, phone };
 		currentStep = 2;
 	}
 
@@ -23,17 +47,51 @@
 		currentStep = 1;
 	}
 
-	function placeOrder() {
-		// remove all items from cart
-		for (const item of items) {
-			cart.remove(item.id);
+	async function placeOrder() {
+		isSubmitting = true;
+		try {
+			const cardNumber = (document.getElementById('card-number') as HTMLInputElement)?.value || '';
+			paymentData = { ...paymentData, cardNumber };
+
+			const formData = new FormData();
+			formData.append('fullName', shippingData.fullName);
+			formData.append('address', shippingData.address);
+			formData.append('city', shippingData.city);
+			formData.append('state', shippingData.state);
+			formData.append('zipCode', shippingData.zipCode);
+			formData.append('phone', shippingData.phone);
+			formData.append('cardNumber', paymentData.cardNumber);
+
+			const cartItems = items.map((item) => ({
+				id: item.id,
+				quantity: item.quantity,
+				price: item.price
+			}));
+			formData.append('cartItems', JSON.stringify(cartItems));
+
+			await fetch('?/placeOrder', {
+				method: 'POST',
+				body: formData
+			});
+
+			for (const item of items) {
+				cart.remove(item.id);
+			}
+
+			currentStep = 3;
+
+			setTimeout(() => {
+				goto('/buyer');
+			}, 3000);
+		} catch (error) {
+			console.error('Error placing order (network/JS):', error);
+			currentStep = 3;
+			setTimeout(() => {
+				goto('/buyer');
+			}, 3000);
+		} finally {
+			isSubmitting = false;
 		}
-
-		currentStep = 3;
-
-		setTimeout(() => {
-			goto('/buyer');
-		}, 3000);
 	}
 </script>
 
@@ -80,18 +138,16 @@
 	</div>
 
 	{#if currentStep === 3}
-		<!-- Success: center in page -->
 		<div class="flex items-center justify-center mt-10">
 			<OrderSucessful />
 		</div>
 	{:else}
-		<!-- Steps 1–2: 2-column layout -->
 		<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-6 items-start">
 			<div>
 				{#if currentStep === 1}
 					<ShippingInfo onContinue={goToPayment} />
 				{:else}
-					<PaymentMethod onBack={goBackToShipping} onPlaceOrder={placeOrder} />
+					<PaymentMethod onBack={goBackToShipping} onPlaceOrder={placeOrder} {isSubmitting} />
 				{/if}
 			</div>
 

@@ -15,7 +15,7 @@ export function generateSessionToken() {
 	return token;
 }
 
-export async function createSession(token: string, userId: string) {
+export async function createSession(token: string, userId: number) {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const session: table.Session = {
 		id: sessionId,
@@ -78,4 +78,19 @@ export function deleteSessionTokenCookie(event: RequestEvent) {
 	event.cookies.delete(sessionCookieName, {
 		path: '/'
 	});
+}
+
+// Helper to get session + user info from cookies
+export async function getSession(cookies: RequestEvent['cookies'] | { get: (name: string) => string | undefined | null } ) {
+	const token = cookies.get(sessionCookieName as any);
+	if (!token) return null;
+
+	const { session, user } = await validateSessionToken(token as string);
+	if (!session || !user) return null;
+
+	return {
+		session,
+		user,
+		userId: (user as any).id
+	};
 }

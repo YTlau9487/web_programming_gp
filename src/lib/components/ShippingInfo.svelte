@@ -105,7 +105,7 @@
 		<button
 			type="submit"
 			class="mt-4 w-full h-11 rounded-xl bg-black text-white text-sm font-medium
-             hover:bg-black/90 active:bg-black/70 cursor-pointer"
+             hover:bg-black/80 active:bg-black/70 cursor-pointer"
 		>
 			Continue to Payment
 		</button>
