@@ -1,103 +1,157 @@
-<script>
+<script lang="ts">
+	import { Star, StarHalf, ShoppingCart } from 'lucide-svelte';
+	import { cart } from '$lib/stores/cart';
 
-  import { Star, ShoppingCart } from '@lucide/svelte';
+	export let product: any;
 
-  export let product = {
-    image: '',
-    category: '',
-    name: '',
-    rating: 0,
-    reviews: 0,
-    price: 0,
-    description: '',
-    stock: 0,
-    seller: ''
-  };
+	let quantity = 1;
+	const maxStars = 5;
 
-  let quantity = 1;
+	const getStars = (rating: number) =>
+		Array.from({ length: maxStars }, (_, i) => {
+			const starNumber = i + 1;
+			if (rating >= starNumber) return 'full';
+			if (rating >= starNumber - 0.5) return 'half';
+			return 'empty';
+		});
+
+	const image = product.images?.[0] ?? product.thumbnail;
+	const name = product.title;
+	const category = product.category;
+	const rating = product.rating;
+	const price = product.price;
+	const description = product.description;
+	const stock = product.stock;
+	const seller = product.brand;
+
+	let showMessage = false;
+
+	function handleAddToCart() {
+		cart.add(product);
+		showMessage = true;
+		setTimeout(() => {
+			showMessage = false;
+		}, 3000);
+	}
 </script>
 
-<div class="flex flex-row gap-8 p-8 bg-white rounded-lg shadow-md">
-  <!-- Left: Big product photo -->
-  <img 
-    src={product.image} 
-    alt={product.name} 
-    class="w-1/2 h-auto object-cover rounded-lg"
-  />
+<div class="flex flex-col md:flex-row gap-6 md:gap-8 p-6 md:p-8 bg-white rounded-lg shadow-md">
+	<!-- Left: Big product photo -->
+	<div class="w-full md:w-1/2">
+		<img
+			src={image}
+			alt={name}
+			class="w-full h-auto md:h-full object-contain md:object-cover rounded-lg"
+		/>
+	</div>
 
-  <!-- Right: Product details -->
-  <div class="w-1/2 flex flex-col justify-start">
-    <!-- Category label -->
-     <div class="py-4">
-  <span class="bg-black text-white px-4 py-2 rounded-full text-sm font-semibold">
-  {product.category}
-</span> 
-  </div>
-    <!-- Rating and reviews -->
-    <div class="flex items-center mt-2">
-      {#each {length: 5} as _, i}
-        <Star 
-          size={20} 
-          class={(i < Math.floor(product.rating)) ? 'fill-yellow-400 stroke-yellow-400' : 'stroke-gray-300 fill-none'} 
-        />
-      {/each}
-      <span class="ml-2 text-gray-600">
-        ({product.reviews} reviews)
-      </span>
-    </div>
+	<!-- Right: Product details -->
+	<div class="w-full md:w-1/2 flex flex-col justify-start relative">
+		<!-- Category label -->
+		<div class="py-2">
+			<span
+				class="inline-block bg-black text-white px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-wide"
+			>
+				{category}
+			</span>
+		</div>
 
-    <!-- Price -->
-    <p class="text-2xl font-bold mt-4 text-black">
-      ${product.price.toFixed(2)}
-    </p>
+		<!-- Name -->
+		<h1 class="mt-2 text-2xl font-semibold text-gray-900">
+			{name}
+		</h1>
 
-    <!-- Details/Description -->
-     
-    <p class="mt-4 text-gray-700">
-      {product.description}
-    </p>
+		<!-- Rating  -->
+		<div class="flex items-center mt-3">
+			{#each getStars(rating) as type}
+				{#if type === 'full'}
+					<Star class="w-5 h-5 text-yellow-400 fill-yellow-400" />
+				{:else if type === 'half'}
+					<StarHalf class="w-5 h-5 text-yellow-400 fill-yellow-400" />
+				{:else}
+					<Star class="w-5 h-5 text-gray-300" />
+				{/if}
+			{/each}
 
+			<span class="ml-2 text-sm text-gray-600">
+				{rating.toFixed(1)} / 5
+			</span>
+		</div>
 
-    <!-- Stock-->
-    <div class="space-y-3">
-      
-      <p class="text-gray-700 flex justify-between">
-        <span class="font-medium order-1 ...">Stock:</span>
-        <span class="ml-2 font-bold text-green-600 order-2 ...">{product.stock} units available</span>
-      </p>
-    
-      <!-- Seller -->
-      <p class="text-gray-700 flex justify-between">
-        <span class="font-medium order-1 ...">Seller:</span>
-        <span class="ml-2 font-medium order-2 ...">{product.seller}</span>
-      </p>
-    </div>
+		<!-- Price -->
+		<p class="text-3xl font-bold mt-4 text-gray-900">
+			${price.toFixed(2)}
+		</p>
 
+		<!-- Details/Description -->
+		<p class="mt-4 text-gray-700 leading-relaxed">
+			{description}
+		</p>
 
+		<!-- Stock & Seller -->
+		<div class="mt-6 space-y-2">
+			<p class="text-sm text-gray-700 flex justify-between">
+				<span class="font-medium">Stock:</span>
+				<span class="ml-2 font-semibold text-green-600">
+					{stock} units available
+				</span>
+			</p>
 
-    <!-- Quantity selector -->
-    <div class="flex items-center mt-4">
-      <button 
-        on:click={() => quantity = Math.max(1, quantity - 1)} 
-        class="bg-gray-200 text-black px-4 py-2 rounded-l-md hover:bg-gray-300"
-      >
-        -
-      </button>
-      <span class="bg-gray-100 text-black px-6 py-2 border-x border-gray-300">
-        {quantity}
-      </span>
-      <button 
-        on:click={() => quantity += 1} 
-        class="bg-gray-200 text-black px-4 py-2 rounded-r-md hover:bg-gray-300"
-      >
-        +
-      </button>
-    </div>
+			<p class="text-sm text-gray-700 flex justify-between">
+				<span class="font-medium">Seller:</span>
+				<span class="ml-2 font-medium">
+					{seller}
+				</span>
+			</p>
+		</div>
 
-    <!-- Add to Cart button -->
-    <button class="bg-black text-white px-6 py-3 mt-6 rounded-md flex items-center justify-center hover:bg-gray-800">
-      <ShoppingCart size={20} class="mr-2" />
-      Add to Cart
-    </button>
-  </div>
+		<!-- Quantity selector -->
+		<div class="mt-6 flex items-center gap-3">
+			<button
+				type="button"
+				class="h-10 w-10 rounded-xl border border-gray-200
+           bg-white text-xl leading-none text-gray-700
+           flex items-center justify-center hover:bg-gray-50
+           active:bg-gray-100 cursor-pointer"
+				onclick={() => (quantity = Math.max(1, quantity - 1))}
+			>
+				-
+			</button>
+
+			<span class="w-6 text-center text-base text-gray-900">
+				{quantity}
+			</span>
+
+			<button
+				type="button"
+				class="h-10 w-10 rounded-xl border border-gray-200
+           bg-white text-xl leading-none text-gray-700
+           flex items-center justify-center hover:bg-gray-50
+           active:bg-gray-100 cursor-pointer"
+				onclick={() => (quantity += 1)}
+			>
+				+
+			</button>
+		</div>
+
+		<!-- Floating message (absolute, above button, right side) -->
+		{#if showMessage}
+			<div class="absolute -top-4 right-0 flex items-center gap-2 text-sm text-emerald-600">
+				<div class="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center">
+					<span class="text-xs font-bold text-white">✓</span>
+				</div>
+				<span>Added to cart</span>
+			</div>
+		{/if}
+
+		<!-- Add to Cart button -->
+		<button
+			type="button"
+			class="bg-black text-white px-6 py-3 mt-6 rounded-md flex items-center justify-center gap-2 hover:bg-slate-900/90 active:bg-slate-900/70 cursor-pointer self-start md:self-end"
+			onclick={handleAddToCart}
+		>
+			<ShoppingCart class="w-5 h-5" />
+			<span>Add to Cart</span>
+		</button>
+	</div>
 </div>

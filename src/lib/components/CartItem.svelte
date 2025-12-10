@@ -1,22 +1,33 @@
-<script>
-	let count = $state(0);
+<script lang="ts">
+	import { cart, type CartItem as CartItemType } from '$lib/stores/cart';
+
+	const { product } = $props<{ product: CartItemType }>();
+	let count = $state(product.quantity); // start from quantity in store
 
 	function increment() {
 		count++;
 	}
 
 	function decrement() {
-		if (count > 0) count--;
+		if (count > 1) {
+			count--;
+		}
+	}
+
+	function removeItem() {
+		cart.remove(product.id);
 	}
 </script>
 
-<div class="max-w-3xl bg-white rounded-3xl shadow-sm border border-gray-100 px-6 py-4">
+<div class="max-w-3xl mb-4 bg-white rounded-3xl shadow-[0px_0px_3px_0px_rgba(0,0,0,0.1)] border border-gray-100 px-6 py-4">
 	<div class="flex items-center gap-6">
-		<img src="product.png" alt="Product" class="h-24 w-24 rounded-xl object-cover" />
+		<img src={product.thumbnail} alt={product.title} class="h-24 w-24 rounded-xl object-cover" />
 
 		<div class="flex-1">
-			<h3 class="text-lg font-semibold text-gray-900">Something 3000</h3>
-			<p class="mt-1 text-base font-medium text-gray-700">$0.00</p>
+			<h3 class="text-lg font-semibold text-gray-900">{product.title}</h3>
+			<p class="mt-1 text-base font-medium text-gray-700">
+				${product.price}
+			</p>
 
 			<div class="mt-4 flex items-center gap-3">
 				<button
@@ -41,7 +52,10 @@
 			</div>
 		</div>
 
-		<button class="self-start text-2xl text-gray-500 hover:text-gray-700 cursor-pointer">
+		<button
+			class="self-start text-2xl text-gray-500 hover:text-gray-700 cursor-pointer"
+			onclick={removeItem}
+		>
 			×
 		</button>
 	</div>

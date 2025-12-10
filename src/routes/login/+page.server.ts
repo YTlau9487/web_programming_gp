@@ -50,6 +50,14 @@ export const actions: Actions = {
 		setSessionTokenCookie(event, token, session.expiresAt);
 
 		// 6. Redirect after successful login
+		if (existing.role === 'buyer') {
+			throw redirect(303, '/buyer');
+		}
+
+		if (existing.role === 'seller') {
+			throw redirect(303, '/seller');
+		}
+
 		throw redirect(303, '/');
 	}
 };

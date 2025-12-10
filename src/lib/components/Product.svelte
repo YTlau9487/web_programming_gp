@@ -1,46 +1,60 @@
+<script lang="ts">
+	import { Star, ShoppingCart } from 'lucide-svelte';
+	import { cart, type ProductData } from '$lib/stores/cart';
 
-<script>
-  export let product = {
-    category: "Electronics",
-    name: "Sample Product",
-    price: "$19.99",
-    stock: 20,
-    description: "This is a sample product description.",
-    imageUrl: "../src/lib/assets/Product+Showcase-1-2997267426.jpg",
-    sellerName: "BestSeller Inc.",
-    star: 4.5
-  };
+	const { product } = $props<{ product: ProductData }>();
 </script>
 
-<div class="max-w-sm rounded overflow-hidden shadow-lg mx-4">
-  <img class="w-full" src={product.imageUrl} alt={product.name} />
-  <div class="px-6 py-4">
-    <div class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-      {product.category}
-    </div>
-    <div class="font-bold text-xl mb-2">{product.name}</div>
-    <p class="text-gray-700 text-base">{product.description}</p>
-  </div>
-  <div class="px-6 pt-4 pb-2">
-    <span class="inline-block  px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-      ⭐ {product.star}
-    </span>
-  </div>
-  <div class="px-6 pt-4 pb-2">
-    <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{product.price}</span>
-    <span class="inline-block bg-yellow-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">Stock: {product.stock}</span>
-  </div>
-  <div class="px-6 pt-4 pb-2 text-gray-600 text-sm">
-    by {product.sellerName}
-  </div>
-  <div class="px-6 pt-4 flex gap-4 pb-2">
-    <button class=" hover:bg-green-700  font-bold py-2 px-4 rounded">
-      View Details
-    </button>
-    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-      Add to Cart
-    </button>
+<div class="max-w-md bg-white rounded-3xl shadow-lg overflow-hidden">
+	<img
+		src={product.thumbnail}
+		alt={product.title}
+		class="w-full max-h-60 object-contain bg-slate-100"
+	/>
 
-  </div>
+	<div class="p-6 space-y-3">
+		<span class="inline-block bg-slate-900 text-white text-xs font-semibold px-3 py-1 rounded-full">
+			{product.category}
+		</span>
+
+		<h2 class="text-xl font-semibold text-slate-900">
+			{product.title}
+		</h2>
+
+		<p class="text-sm text-slate-600 leading-relaxed">
+			{product.description}
+		</p>
+
+		<div class="flex items-center gap-2 text-sm text-slate-700">
+			<Star class="w-4 h-4 text-yellow-500 fill-yellow-500" />
+			<span class="font-medium">{product.rating}</span>
+			<span class="text-slate-400">(Stock: {product.stock})</span>
+		</div>
+
+		<div class="flex items-center justify-between text-sm text-slate-900">
+			<span class="text-lg font-semibold">
+				${product.price}
+			</span>
+			<span class="text-slate-500">
+				by {product.brand}
+			</span>
+		</div>
+
+		<div class="pt-2 flex gap-3">
+			<a
+				href={`/buyer/${product.id}`}
+				class="flex-1 border border-slate-200 rounded-2xl py-2.5 text-sm font-medium cursor-pointer text-slate-800 hover:bg-slate-50/90 active:bg-slate-50/50 text-center flex items-center justify-center"
+			>
+				View Details
+			</a>
+
+			<button
+				class="flex-1 bg-slate-900 text-white rounded-2xl py-2.5 text-sm font-medium cursor-pointer hover:bg-slate-900/90 active:bg-slate-900/70 flex items-center justify-center gap-2"
+				onclick={() => cart.add(product)}
+			>
+				<ShoppingCart class="w-4 h-4" />
+				<span>Add to Cart</span>
+			</button>
+		</div>
+	</div>
 </div>
-
