@@ -16,6 +16,35 @@ export const session = sqliteTable('session', {
   expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull()
 });
 
+export const sellerProduct = sqliteTable('seller_product', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  sellerId: text('seller_id').notNull().references(() => user.id),
+  productId: integer('product_id').notNull().references(() => product.id),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+export const buyerOrder = sqliteTable('buyer_order', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  buyerId: text('buyer_id').notNull().references(() => user.id),
+  fullName: text('full_name').notNull(),
+  address: text('address').notNull(),
+  city: text('city').notNull(),
+  state: text('state').notNull(),
+  zipCode: text('zip_code').notNull().default('0000'),
+  phone: text('phone').notNull(),
+  cardNumber: text('card_number').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+});
+
+export const orderItem = sqliteTable('order_item', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  orderId: text('order_id').notNull().references(() => buyerOrder.id),
+  productId: integer('product_id').notNull().references(() => product.id),
+  quantity: integer('quantity').notNull(),
+  price: real('price').notNull(),
+});
+
 export const product = sqliteTable('product', {
   id: integer('id').primaryKey(),
   title: text('title').notNull(),
@@ -70,3 +99,6 @@ export type Product = typeof product.$inferSelect;
 export type ProductImage = typeof productImage.$inferSelect;
 export type ProductDimensions = typeof productDimensions.$inferSelect;
 export type ProductReview = typeof productReview.$inferSelect;
+export type SellerProduct = typeof sellerProduct.$inferSelect;
+export type BuyerOrder = typeof buyerOrder.$inferSelect;
+export type OrderItem = typeof orderItem.$inferSelect;
