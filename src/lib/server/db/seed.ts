@@ -1,7 +1,7 @@
 import { db } from './index';
 import { product, productImage, productDimensions, productReview, user } from './schema';
 import productsData from '$lib/data/products.json';
-import { hash } from '@node-rs/argon2';
+import { hash } from 'argon2';
 
 export async function seedUsers() {
   try {
