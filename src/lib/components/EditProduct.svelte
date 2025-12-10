@@ -45,7 +45,7 @@
   </div>
 
   <!-- Form -->
-  <form class="space-y-4">
+  <form class="space-y-4" method="POST">
     <!-- Grid two columns -->
     <div class="grid grid-cols-2 gap-4">
       <!-- Product Name -->
