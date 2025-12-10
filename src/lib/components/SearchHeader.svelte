@@ -28,11 +28,12 @@
 		cartOpen = false;
 	}
 
-  function goToOrders() {
-    window.location.href = '/buyerOrders';
-  }
+	function goToOrders() {
+		window.location.href = '/buyerOrders';
+	}
 
 	async function proceedToCheckout() {
+		console.log('proceedToCheckout clicked'); // check if this logs
 		cartOpen = false;
 		await goto('/checkout');
 	}
@@ -51,7 +52,7 @@
 </header>
 
 {#if cartOpen}
-	<div class="fixed inset-0 z-40 bg-black/40 flex justify-end items-end lg:items-stretch">
+	<div class="fixed inset-0 z-53 bg-black/40 flex justify-end items-end lg:items-stretch">
 		<aside
 			in:fly={{ x: 400, y: 0, duration: 250 }}
 			out:fly={{ x: 400, y: 0, duration: 200 }}
