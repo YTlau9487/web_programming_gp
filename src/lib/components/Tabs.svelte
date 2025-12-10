@@ -1,20 +1,19 @@
-<script>
-    // @ts-nocheck
-	/** 
+<script lang="ts">
+    /** 
 	 * items = array of tabs
 	 * Can be: strings only → ["Home", "Profile", "Settings"]
 	 * Or objects → [{ label: "Home", value: "home" }, ...]
 	 */
-	export let items = [];
+	export let items: any[] = [];
 
 	/** Currently active tab (two-way bindable) */
-	export let value = null;
+	export let value: string | null = null;
 
 	import { createEventDispatcher, onMount } from 'svelte';
 	const dispatch = createEventDispatcher();
 
 	// Normalize items so we always have .label and .value
-	let list;
+	let list: any[];
 	$: list = items.map(item => 
 		typeof item === 'string' 
 			? { label: item, value: item }
@@ -28,7 +27,7 @@
 		}
 	});
 
-	function select(item) {
+	function select(item: any) {
 		value = item.value;
 		dispatch('change', { value: item.value, item });
 	}

@@ -1,5 +1,5 @@
 import { db } from './index';
-import { product, productImage, productDimensions, productReview } from './schema';
+import { product, productImage, productDimensions, productReview, buyerOrder, orderItem } from './schema';
 import { eq } from 'drizzle-orm';
 
 export async function getAllProducts() {
@@ -21,4 +21,45 @@ export async function getProductById(id: number) {
     dimensions: dimensions ? { width: dimensions.width, height: dimensions.height, depth: dimensions.depth } : null,
     reviews
   };
+}
+
+export async function getOrdersByBuyerId(buyerId: number) {
+  try {
+    const orders = await db.select().from(buyerOrder).where(eq(buyerOrder.buyerId, buyerId));
+    
+    console.log(`Fetched ${orders.length} orders for buyer ${buyerId}`);
+    
+    if (orders.length === 0) return [];
+
+    // For each order, get its items and product details
+    const ordersWithItems = await Promise.all(
+      orders.map(async (order) => {
+        const items = await db.select().from(orderItem).where(eq(orderItem.orderId, order.id));
+        
+        const productsInOrder = await Promise.all(
+          items.map(async (item) => {
+            const [prod] = await db.select().from(product).where(eq(product.id, item.productId));
+            const images = await db.select().from(productImage).where(eq(productImage.productId, item.productId));
+            return {
+              ...prod,
+              quantity: item.quantity,
+              itemPrice: item.price,
+              images: images.map(img => img.imageUrl),
+            };
+          })
+        );
+
+        return {
+          ...order,
+          products: productsInOrder,
+        };
+      })
+    );
+
+    console.log(`Processed ${ordersWithItems.length} orders with items`);
+    return ordersWithItems;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    return [];
+  }
 }
