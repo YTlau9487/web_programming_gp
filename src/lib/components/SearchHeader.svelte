@@ -28,7 +28,7 @@
   }
 
   function goToOrders() {
-    window.location.href = '/orders';
+    window.location.href = '/buyerOrders';
   }
 </script>
 

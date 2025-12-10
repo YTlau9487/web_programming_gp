@@ -1,7 +1,10 @@
 <script>
-  import products from '$lib/data/products.json';
   import CartItem from '$lib/components/CartItem.svelte';
 	import ShoppingBag from '~icons/lucide/shopping-bag';
+  
+  export let data;
+  
+  $: products = data.products || [];
 </script>
 
 <div class="drawer drawer-end">
