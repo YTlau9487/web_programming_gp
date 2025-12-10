@@ -1,6 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 import * as auth from '$lib/server/auth';
-import { seedProducts, seedUsers, seedSellerProducts } from '$lib/server/db/seed';
+// import { seedProducts, seedUsers, seedSellerProducts } from '$lib/server/db/seed';
+import { seedProducts, seedUsers } from '$lib/server/db/seed';
 
 const handleAuth: Handle = async ({ event, resolve }) => {
   const sessionToken = event.cookies.get(auth.sessionCookieName);
@@ -31,13 +32,18 @@ const handleAuth: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
-// Run seed on startup (only once)
+// Run seeds on startup (only once)
 let seedRun = false;
 if (!seedRun) {
-  seedRun = true;
-  seedUsers().catch(console.error);
-  seedProducts().catch(console.error);
-  seedSellerProducts().catch(console.error);
+	seedRun = true;
+	(async () => {
+		try {
+			await seedUsers();
+			await seedProducts();
+		} catch (error) {
+			console.error('Error during seeding:', error);
+		}
+	})();
 }
 
 export const handle: Handle = handleAuth;
