@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
 
-  // 用对象存储多个字段
+  // Storing multiple fields using objects
   let values = {
     ProductName: '',
     Category: '',
@@ -11,14 +11,14 @@
     Description: ''
   };
 
-  // 获取数据
+  // Retrieve data
   onMount(async () => {
     const res = await fetch('/api/value');
     const data = await res.json();
-    values = data; // 用获取到的对象赋值
+    values = data; // Assign the obtained object
   });
 
-  // 发送更新的全部数据
+  // Send all updated data
   async function save() {
     const res = await fetch('/api/value', {
       method: 'POST',
@@ -26,7 +26,6 @@
       body: JSON.stringify(values)
     });
     const result = await res.json();
-    // 可以用 result.data 来更新界面
     console.log(result);
   }
 </script>

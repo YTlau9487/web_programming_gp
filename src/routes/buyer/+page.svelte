@@ -22,9 +22,9 @@
         });
 </script>
 
-<Header user={data.user} />
+  <Header user={data.user} />
 
-<SearchHeader bind:searchTerm />
+  <SearchHeader bind:searchTerm />
 
 
 <div class="flex flex-wrap justify-center gap-8">
