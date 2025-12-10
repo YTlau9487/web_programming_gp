@@ -1,22 +1,22 @@
 <script>
   export let orders = [];
 
-  // Helper to get status badge classes
+  // Helper to get status badge classes - with fixed sizing
   function getStatusClasses(status) {
-    const base = 'px-3 py-1 rounded-full text-xs font-medium text-white';
+    const base = 'w-24 h-8 rounded-xl border text-xs font-medium flex items-center justify-center';
     switch (status) {
       case 'processing':
-        return `${base} bg-blue-600`;
+        return `${base} bg-blue-50 border-blue-200 text-blue-600`;
       case 'shipped':
-        return `${base} bg-purple-600`;
+        return `${base} bg-purple-50 border-purple-200 text-purple-600`;
       case 'delivered':
-        return `${base} bg-green-600`;
+        return `${base} bg-green-50 border-green-200 text-green-600`;
       case 'cancelled':
-        return `${base} bg-red-600`;
+        return `${base} bg-red-50 border-red-200 text-red-600`;
       case 'pending':
-        return `${base} bg-yellow-600`;
+        return `${base} bg-yellow-50 border-yellow-200 text-yellow-600`;
       default:
-        return `${base} bg-gray-600`;
+        return `${base} bg-gray-50 border-gray-200 text-gray-600`;
     }
   }
 
@@ -75,7 +75,7 @@
         </div>
 
         <!-- Status Badge -->
-        <div class="col-span-2 flex justify-center">
+        <div class="col-span-2 flex justify-center items-center">
           <span class={getStatusClasses(order.status)}>
             {formatStatus(order.status)}
           </span>
