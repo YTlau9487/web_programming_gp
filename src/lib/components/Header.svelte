@@ -18,7 +18,7 @@
          px-4 py-3
          flex flex-col gap-2
          sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-2
-         lg:px-36 lg:h-15"
+         lg:px-36 lg:h-15 z-50"
 >
 
 	<div class="flex items-center gap-2">
