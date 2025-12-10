@@ -1,19 +1,15 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import type { Product } from '$lib/server/db/schema';
 
   const dispatch = createEventDispatcher();
 
-  export let product: any;
-
   let formData = {
-    id: product?.id || '',
-    productName: product?.name || product?.title || '',
-    category: product?.category || '',
-    price: product?.price || 0,
-    stock: product?.stock || 0,
-    image: product?.image || product?.thumbnail || '',
-    description: product?.description || ''
+    productName: '',
+    category: '',
+    price: 0,
+    stock: 0,
+    image: '',
+    description: ''
   };
 
   function handleClose() {
@@ -24,7 +20,6 @@
     e.preventDefault();
     
     const data = new FormData();
-    data.append('id', formData.id);
     data.append('productName', formData.productName);
     data.append('category', formData.category);
     data.append('price', formData.price.toString());
@@ -33,7 +28,7 @@
     data.append('description', formData.description);
 
     try {
-      const res = await fetch('/seller?/updateProduct', {
+      const res = await fetch('/seller?/addProduct', {
         method: 'POST',
         body: data
       });
@@ -42,7 +37,7 @@
         dispatch('submit');
       }
     } catch (error) {
-      console.error('Error updating product:', error);
+      console.error('Error adding product:', error);
     }
   }
 
@@ -61,8 +56,8 @@
 >
   <!-- Header -->
   <div class="flex flex-col gap-2 text-center sm:text-left">
-    <h2 class="text-lg font-semibold leading-none">Edit Product</h2>
-    <p class="text-sm text-gray-500">Update the product information</p>
+    <h2 class="text-lg font-semibold leading-none">Add New Product</h2>
+    <p class="text-sm text-gray-500">Fill in the details to add a new product to your store</p>
   </div>
 
   <!-- Form -->
@@ -169,7 +164,7 @@
         class="px-4 py-2 rounded-md bg-neutral-900 text-white text-sm font-medium 
                hover:bg-neutral-800"
       >
-        Update Product
+        Add Product
       </button>
     </div>
   </form>

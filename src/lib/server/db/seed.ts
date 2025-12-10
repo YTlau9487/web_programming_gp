@@ -178,3 +178,67 @@ export async function seedOrders() {
     console.error('Error seeding orders:', error);
   }
 }
+
+export async function seedSellerOrders() {
+  try {
+    // Check if orders for alice_seller already exist
+    const existingAliceOrders = await db.select().from(buyerOrder)
+      .innerJoin(orderItem, eq(buyerOrder.id, orderItem.orderId))
+      .innerJoin(product, eq(orderItem.productId, product.id))
+      .where(eq(product.sellerId, 3)); // alice_seller has id 3
+    
+    if (existingAliceOrders.length > 0) {
+      console.log('Orders for alice_seller already exist, skipping...');
+      return;
+    }
+
+    console.log('Starting alice_seller orders seed...');
+
+    // Get john_buyer (id: 1) and alice_seller's products (seller_id: 3)
+    const buyer = await db.select().from(user).where(eq(user.username, 'john_buyer')).limit(1);
+    const sellerProducts = await db.select().from(product).where(eq(product.sellerId, 3));
+
+    if (buyer.length === 0 || sellerProducts.length === 0) {
+      console.log('john_buyer or alice_seller products not found');
+      return;
+    }
+
+    const buyerId = buyer[0].id;
+    const orderStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+
+    // Create 5 orders with different statuses
+    for (let i = 0; i < 5; i++) {
+      const status = orderStatuses[i];
+      const randomProducts = sellerProducts.sort(() => Math.random() - 0.5).slice(0, 2); // Pick 2 random products
+
+      const orderId = await db.insert(buyerOrder).values({
+        buyerId: buyerId,
+        fullName: 'John Buyer',
+        address: `${100 + i} Main St`,
+        city: 'New York',
+        state: 'NY',
+        zipCode: '10001',
+        phone: '555-' + Math.floor(Math.random() * 9000) + 1000,
+        cardNumber: '4532-' + Math.floor(Math.random() * 9000 + 1000) + '-' + Math.floor(Math.random() * 9000 + 1000) + '-' + Math.floor(Math.random() * 9000 + 1000),
+        orderStatus: status,
+      }).returning({ id: buyerOrder.id });
+
+      // Add products to order
+      for (const prod of randomProducts) {
+        const quantity = Math.floor(Math.random() * 3) + 1;
+        await db.insert(orderItem).values({
+          orderId: orderId[0].id,
+          productId: prod.id,
+          quantity,
+          price: prod.price,
+        });
+      }
+
+      console.log(`✅ Created ${status} order for alice_seller`);
+    }
+
+    console.log('alice_seller orders seed completed successfully!');
+  } catch (error) {
+    console.error('Error seeding alice_seller orders:', error);
+  }
+}
