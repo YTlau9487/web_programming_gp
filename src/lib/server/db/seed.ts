@@ -1,7 +1,8 @@
 import { db } from './index';
-import { product, productImage, productDimensions, productReview, user } from './schema';
+import { product, productImage, productDimensions, productReview, user, sellerProduct } from './schema';
 import productsData from '$lib/data/products.json';
 import { hash } from 'argon2';
+import { eq } from 'drizzle-orm';
 
 export async function seedUsers() {
   try {
@@ -39,7 +40,6 @@ export async function seedUsers() {
 
 export async function seedProducts() {
   try {
-    // Check if products already exist
     const existingProducts = await db.select().from(product).limit(1);
     if (existingProducts.length > 0) {
       console.log('Products already seeded, skipping...');
@@ -106,5 +106,40 @@ export async function seedProducts() {
     console.log('Product seed completed successfully!');
   } catch (error) {
     console.error('Error seeding products:', error);
+  }
+}
+
+export async function seedSellerProducts() {
+  try {
+    const existingSellerProducts = await db.select().from(sellerProduct).limit(1);
+    if (existingSellerProducts.length > 0) {
+      console.log('Seller products already seeded, skipping...');
+      return;
+    }
+
+    console.log('Starting seller product assignment...');
+
+    // Get all sellers and products
+    const sellers = await db.select().from(user).where(eq(user.role, 'seller'));
+    const products = await db.select().from(product);
+
+    if (sellers.length === 0 || products.length === 0) {
+      console.log('No sellers or products found');
+      return;
+    }
+
+    // Assign products to sellers (distribute products across sellers)
+    for (let i = 0; i < products.length; i++) {
+      const sellerIndex = i % sellers.length;
+      await db.insert(sellerProduct).values({
+        sellerId: sellers[sellerIndex].id,
+        productId: products[i].id,
+        createdAt: new Date(),
+      });
+    }
+
+    console.log('Seller product assignment completed successfully!');
+  } catch (error) {
+    console.error('Error seeding seller products:', error);
   }
 }
