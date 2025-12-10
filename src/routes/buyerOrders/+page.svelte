@@ -2,13 +2,13 @@
 	import OrderDetail from '$lib/components/OrderDetail.svelte';
 	import Tabs from '$lib/components/Tabs.svelte';
 	import ArrowLeft from '~icons/lucide/arrow-left';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 
 	export let data;
 
-	const orders = data.orders || [];
-	const hasOrders = data.allOrders.length > 0;
-	const currentFilter = data.currentFilter || 'active';
+	let orders = data.orders || [];
+	let hasOrders = data.allOrders.length > 0;
+	let currentFilter = data.currentFilter || 'active';
 
 	const tabItems = ['Active Orders', 'Completed', 'Cancelled'];
 	const filterMap: Record<string, string> = {
@@ -25,12 +25,20 @@
 
 	// Reactively update selectedTab when currentFilter changes
 	$: selectedTab = reverseFilterMap[currentFilter] || 'Active Orders';
+	$: orders = data.orders || [];
+	$: hasOrders = data.allOrders.length > 0;
+	$: currentFilter = data.currentFilter || 'active';
 
-	function handleTabChange(event: CustomEvent<{ value: string }>) {
+	async function handleTabChange(event: CustomEvent<{ value: string }>) {
 		const tabName = event.detail.value;
 		const status = filterMap[tabName];
 		console.log('Tab changed to:', tabName, '-> status:', status);
-		goto(`/buyerOrders?status=${status}`);
+		
+		// Update URL and wait for navigation
+		await goto(`/buyerOrders?status=${status}`, { replaceState: false });
+		
+		// Invalidate to refetch data
+		await invalidateAll();
 	}
 </script>
 
