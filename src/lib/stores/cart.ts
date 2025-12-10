@@ -32,8 +32,18 @@ function createCartStore() {
     },
     remove(id: number) {
       update((items) => items.filter((i) => i.id !== id));
+    },
+    changeQuantity(id: number, delta: number) {
+      update((items) =>
+        items.map((i) =>
+          i.id === id
+            ? { ...i, quantity: Math.max(1, i.quantity + delta) } // 不低於 1
+            : i
+        )
+      );
     }
   };
 }
+
 
 export const cart = createCartStore();
