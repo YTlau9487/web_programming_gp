@@ -1,6 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 import * as auth from '$lib/server/auth';
-import { seedProducts, seedUsers, seedOrders } from '$lib/server/db/seed';
+import { seedProducts, seedUsers, seedOrders, seedSellerOrders } from '$lib/server/db/seed';
 
 const handleAuth: Handle = async ({ event, resolve }) => {
   const sessionToken = event.cookies.get(auth.sessionCookieName);
@@ -45,6 +45,10 @@ if (!seedRun) {
     .then(() => {
       console.log('✅ Products seeded, starting orders...');
       return seedOrders();
+    })
+    .then(() => {
+      console.log('✅ Orders seeded, starting alice_seller orders...');
+      return seedSellerOrders();
     })
     .then(() => {
       console.log('✅ All seeding completed!');
