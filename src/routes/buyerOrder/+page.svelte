@@ -1,7 +1,7 @@
 <script>
 	import OrderDetail from '$lib/components/OrderDetail.svelte';
 	import Tabs from '$lib/components/Tabs.svelte';
-	import { ArrowLeft } from 'lucide-svelte';
+	import ArrowLeft from '~icons/lucide/arrow-left';
 </script>
 
 <div class=" p-2 mb-4 shadow-[0px_5px_3px_0px_rgba(0,0,0,0.1)]">

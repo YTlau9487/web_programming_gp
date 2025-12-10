@@ -1,5 +1,6 @@
 <script>
-  import { Package, ShoppingCart } from 'lucide-svelte';
+  import Package from "~icons/lucide/package";
+  import ShoppingCart from "~icons/lucide/shopping-cart";
 
   let { onOpenCart, onGoToOrders, cartCount = 0 } = $props();
 </script>

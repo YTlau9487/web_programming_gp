@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Search from '@lucide/svelte/icons/search';
+  import Search from '~icons/lucide/search';
 
   export let searchTerm: string = '';
 </script>

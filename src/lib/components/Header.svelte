@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { ShoppingBag, LogOut, LogIn } from 'lucide-svelte';
+	import ShoppingBag from '~icons/lucide/shopping-bag';
+	import LogOut from '~icons/lucide/log-out';
+	import LogIn from '~icons/lucide/log-in';
 
 	type HeaderUser = {
 		id: string;

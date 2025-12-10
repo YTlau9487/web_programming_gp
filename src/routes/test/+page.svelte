@@ -1,7 +1,7 @@
 <script>
   import products from '$lib/data/products.json';
   import CartItem from '$lib/components/CartItem.svelte';
-  import { ShoppingBag } from 'lucide-svelte';
+	import ShoppingBag from '~icons/lucide/shopping-bag';
 </script>
 
 <div class="drawer drawer-end">
