@@ -1,6 +1,9 @@
 <script>
-	// @ts-ignore
-	import { Van, Package, Clock, CircleCheck, CircleX } from 'lucide-svelte';
+	import Van from '~icons/lucide/van';
+	import Package from '~icons/lucide/package';
+	import Clock from '~icons/lucide/clock';
+	import CircleCheck from '~icons/lucide/circle-check';
+	import CircleX from '~icons/lucide/circle-x';
 
 	let props = $props();
 	let { orderId, createdAt, status, products, totalAmount } = props;

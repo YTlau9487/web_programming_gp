@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { Star, StarHalf, ShoppingCart } from 'lucide-svelte';
+	import Star from '~icons/lucide/star';
+	import StarHalf from '~icons/lucide/star-half';
+	import ShoppingCart from '~icons/lucide/shopping-cart';
 	import { cart } from '$lib/stores/cart';
 
 	export let product: any;

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Star, UserRound } from 'lucide-svelte';
+	import Star from '~icons/lucide/star';
+	import UserRound from '~icons/lucide/user-round';
 
 	export let reviewerName: string;
 	export let rating: number;

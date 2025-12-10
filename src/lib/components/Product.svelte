@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Star, ShoppingCart } from 'lucide-svelte';
+	import Star from '~icons/lucide/star';
+	import ShoppingCart from '~icons/lucide/shopping-cart';
 	import { cart, type ProductData } from '$lib/stores/cart';
 
 	const { product } = $props<{ product: ProductData }>();

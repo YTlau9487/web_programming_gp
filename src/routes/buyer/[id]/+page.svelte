@@ -3,7 +3,7 @@
 	import ProductDetail from '$lib/components/ProductDetail.svelte';
 	import CustomerReviews from '$lib/components/CustomerReviews.svelte';
 	import Comment from '$lib/components/Comment.svelte';
-	import { ArrowLeft } from 'lucide-svelte';
+	import ArrowLeft from '~icons/lucide/arrow-left';
 	export let data;
 	const product = data.product;
 	const reviews = product.reviews ?? [];
