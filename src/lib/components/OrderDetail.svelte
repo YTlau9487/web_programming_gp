@@ -10,15 +10,15 @@
 		const lowerStatus = status.toLowerCase();
 		switch (lowerStatus) {
 			case 'pending':
-				return 'bg-yellow-500 text-yellow-900';
+				return 'bg-yellow-200 text-yellow-900';
 			case 'processing':
-				return 'bg-orange-500 text-orange-900';
+				return 'bg-blue-200 text-blue-900';
 			case 'shipped':
-				return 'bg-blue-500 text-blue-900';
+				return 'bg-purple-200 text-purple-900';
         case 'cancelled':
-        return 'bg-red-500 text-red-900';
+        return 'bg-red-200 text-red-900';
 			case 'delivered':
-				return 'bg-green-500 text-green-900';
+				return 'bg-green-200 text-green-900';
 			default:
 				return 'bg-gray-500 text-gray-900';
 		}
@@ -52,7 +52,7 @@
 		{#each products as product}
 			<div class="flex items-center mb-3 border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
 				<img src={product.img} alt={product.name} class="w-16 h-16 object-cover rounded-md mr-4" />
-				<div class="flex-grow">
+				<div class="grow">
 					<p class="text-base font-medium text-gray-800">{product.name}</p>
 					<p class="text-sm text-gray-600">Qty: {product.qty}</p>
 				</div>
