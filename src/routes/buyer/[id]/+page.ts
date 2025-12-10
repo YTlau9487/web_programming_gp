@@ -1,10 +1,10 @@
 // src/routes/buyer/[id]/+page.ts
 import type { PageLoad } from './$types';
-import data from '$lib/data/products.json';
+import { getProductById } from '$lib/server/db/queries';
 
-export const load: PageLoad = ({ params }) => {
+export const load: PageLoad = async ({ params }) => {
   const id = Number(params.id);
-  const product = data.products.find((p) => p.id === id);
+  const product = await getProductById(id);
 
   if (!product) {
     throw new Error('Product not found');

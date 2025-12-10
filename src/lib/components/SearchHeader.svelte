@@ -28,9 +28,9 @@
 		cartOpen = false;
 	}
 
-	function goToOrders() {
-		window.location.href = '/orders';
-	}
+  function goToOrders() {
+    window.location.href = '/buyerOrders';
+  }
 
 	async function proceedToCheckout() {
 		cartOpen = false;
