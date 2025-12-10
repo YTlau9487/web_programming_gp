@@ -1,6 +1,41 @@
 import { db } from './index';
-import { product, productImage, productDimensions, productReview } from './schema';
+import { product, productImage, productDimensions, productReview, user } from './schema';
 import productsData from '$lib/data/products.json';
+import { hash } from '@node-rs/argon2';
+
+export async function seedUsers() {
+  try {
+    const existingUsers = await db.select().from(user).limit(1);
+    if (existingUsers.length > 0) {
+      console.log('Users already seeded, skipping...');
+      return;
+    }
+
+    console.log('Starting user seed...');
+
+    const dummyUsers = [
+      { email: 'buyer1@example.com', username: 'john_buyer', password: 'password123', role: 'buyer' },
+      { email: 'buyer2@example.com', username: 'jane_buyer', password: 'password123', role: 'buyer' },
+      { email: 'seller1@example.com', username: 'alice_seller', password: 'password123', role: 'seller' },
+      { email: 'seller2@example.com', username: 'bob_seller', password: 'password123', role: 'seller' },
+      { email: 'admin@example.com', username: 'admin_user', password: 'password123', role: 'buyer' },
+    ];
+
+    for (const u of dummyUsers) {
+      const passwordHash = await hash(u.password);
+      await db.insert(user).values({
+        email: u.email,
+        username: u.username,
+        passwordHash,
+        role: u.role,
+      });
+    }
+
+    console.log('User seed completed successfully!');
+  } catch (error) {
+    console.error('Error seeding users:', error);
+  }
+}
 
 export async function seedProducts() {
   try {
