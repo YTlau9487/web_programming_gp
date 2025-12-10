@@ -1,6 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 import * as auth from '$lib/server/auth';
-import { seedProducts, seedUsers, seedSellerProducts } from '$lib/server/db/seed';
+import { seedProducts, seedUsers, seedOrders } from '$lib/server/db/seed';
 
 const handleAuth: Handle = async ({ event, resolve }) => {
   const sessionToken = event.cookies.get(auth.sessionCookieName);
@@ -35,9 +35,23 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 let seedRun = false;
 if (!seedRun) {
   seedRun = true;
-  seedUsers().catch(console.error);
-  seedProducts().catch(console.error);
-  seedSellerProducts().catch(console.error);
+  console.log('🌱 Starting database seeding...');
+  
+  seedUsers()
+    .then(() => {
+      console.log('✅ Users seeded, starting products...');
+      return seedProducts();
+    })
+    .then(() => {
+      console.log('✅ Products seeded, starting orders...');
+      return seedOrders();
+    })
+    .then(() => {
+      console.log('✅ All seeding completed!');
+    })
+    .catch(error => {
+      console.error('❌ Seeding error:', error);
+    });
 }
 
 export const handle: Handle = handleAuth;
