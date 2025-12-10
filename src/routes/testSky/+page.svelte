@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Test from '$lib/components/ShippingInfo.svelte';
+  import Test from '$lib/components/TotalReview.svelte';
 </script>
 
 <Test />
