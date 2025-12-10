@@ -3,13 +3,15 @@
 	import ActionBtn from './ActionBtn.svelte';
 	import CartItem from './CartItem.svelte';
 	import { cart } from '$lib/stores/cart';
-	import { derived } from 'svelte/store';
+	import { derived, writable } from 'svelte/store';
 	import { fly } from 'svelte/transition';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	export let searchTerm: string = '';
 
 	let cartOpen = false;
+	const productStockStore = writable(new Map<number, number>());
 	const cartItemsStore = cart;
 
 	const cartCountStore = derived(cartItemsStore, (items) =>
@@ -19,6 +21,37 @@
 	const cartTotalStore = derived(cartItemsStore, (items) =>
 		items.reduce((sum, i) => sum + i.price * i.quantity, 0)
 	);
+
+	// Derived store to check if any cart item is out of stock or quantity exceeds stock
+	const hasOutOfStockItems = derived(
+		[cartItemsStore, productStockStore],
+		([$items, $stock]) => {
+			console.log('[SearchHeader] Checking stock. Items:', $items.map(i => ({ id: i.id, qty: i.quantity, stock: $stock.get(i.id) })));
+			return $items.some(item => {
+				const stock = $stock.get(item.id) ?? 0;
+				// Block if: stock is 0 OR cart quantity exceeds available stock
+				return stock <= 0 || item.quantity > stock;
+			});
+		}
+	);
+
+	// Fetch product stock on mount
+	onMount(async () => {
+		try {
+			console.log('[SearchHeader] Fetching products...');
+			const response = await fetch('/api/products');
+			if (response.ok) {
+				const products = await response.json();
+				const stockMap = new Map<number, number>(
+					products.map((p: any) => [p.id as number, p.stock as number])
+				);
+				productStockStore.set(stockMap);
+				console.log('[SearchHeader] Stock fetched:', Array.from(stockMap.entries()));
+			}
+		} catch (error) {
+			console.error('Failed to fetch product stock:', error);
+		}
+	});
 
 	function openCart() {
 		cartOpen = true;
@@ -33,6 +66,10 @@
 	}
 
 	async function proceedToCheckout() {
+		if ($hasOutOfStockItems) {
+			alert('Cannot proceed: Some items in your cart are out of stock. Please remove them before checking out.');
+			return;
+		}
 		console.log('proceedToCheckout clicked'); // check if this logs
 		cartOpen = false;
 		await goto('/checkout');
@@ -86,13 +123,19 @@
 					<span class="font-bold">${$cartTotalStore.toFixed(2)}</span>
 				</div>
 
+				{#if $hasOutOfStockItems}
+					<div class="p-2 bg-red-50 border border-red-300 rounded text-red-700 text-xs">
+						⚠️ Some items in your cart are out of stock. Please remove them to proceed.
+					</div>
+				{/if}
+
 				<button
 					class="w-full rounded-md bg-black text-white text-sm font-medium
            py-2.5 hover:bg-black/90 active:bg-black/70 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
 					onclick={proceedToCheckout}
-					disabled={$cartItemsStore.length === 0}
+					disabled={$cartItemsStore.length === 0 || $hasOutOfStockItems}
 				>
-					Proceed to checkout
+					{$hasOutOfStockItems ? 'Out of Stock Items' : 'Proceed to checkout'}
 				</button>
 			</footer>
 		</aside>

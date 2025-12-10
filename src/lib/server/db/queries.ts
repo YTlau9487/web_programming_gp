@@ -1,6 +1,7 @@
 import { db } from './index';
 import { product, productImage, productDimensions, productReview, buyerOrder, orderItem } from './schema';
 import { eq } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 
 export async function getAllProducts() {
   return await db.select().from(product);
@@ -61,5 +62,74 @@ export async function getOrdersByBuyerId(buyerId: number) {
   } catch (error) {
     console.error('Error fetching orders:', error);
     return [];
+  }
+}
+
+export async function createOrder(orderData: {
+  buyerId: number;
+  fullName: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  phone: string;
+  cardNumber: string;
+  items: Array<{
+    productId: number;
+    quantity: number;
+    price: number;
+  }>;
+}) {
+  try {
+    // Create the buyer order
+    const result = await db.insert(buyerOrder).values({
+      buyerId: orderData.buyerId,
+      fullName: orderData.fullName,
+      address: orderData.address,
+      city: orderData.city,
+      state: orderData.state,
+      zipCode: orderData.zipCode,
+      phone: orderData.phone,
+      cardNumber: orderData.cardNumber,
+      orderStatus: 'pending',
+    }).returning({ id: buyerOrder.id });
+
+    const orderId = result[0].id;
+
+    // Create order items and decrement product stock
+    for (const item of orderData.items) {
+      // Check current stock before decrementing
+      const [currentProduct] = await db.select({ stock: product.stock }).from(product).where(eq(product.id, item.productId));
+      
+      if (!currentProduct || currentProduct.stock <= 0) {
+        console.warn(`[createOrder] Product ${item.productId} is out of stock, cannot proceed`);
+        throw new Error(`Product ${item.productId} is out of stock`);
+      }
+
+      if (currentProduct.stock < item.quantity) {
+        console.warn(`[createOrder] Product ${item.productId} insufficient stock: ${currentProduct.stock} < ${item.quantity}`);
+        throw new Error(`Product ${item.productId} has insufficient stock. Available: ${currentProduct.stock}, Requested: ${item.quantity}`);
+      }
+
+      await db.insert(orderItem).values({
+        orderId,
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price,
+      });
+
+      // Decrement product stock (but never below 0)
+      await db.update(product)
+        .set({ stock: sql`MAX(0, ${product.stock} - ${item.quantity})` })
+        .where(eq(product.id, item.productId));
+      
+      console.log(`[createOrder] Decremented stock for product ${item.productId} by ${item.quantity}`);
+    }
+
+    console.log(`Order ${orderId} created successfully with ${orderData.items.length} items`);
+    return { orderId };
+  } catch (error) {
+    console.error('Error creating order:', error);
+    throw error;
   }
 }

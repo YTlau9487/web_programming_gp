@@ -4,9 +4,10 @@
 	type PaymentMethodProps = {
 		onBack?: () => void;
 		onPlaceOrder?: () => void;
+		isSubmitting?: boolean;
 	};
 
-	const { onBack, onPlaceOrder }: PaymentMethodProps = $props();
+	const { onBack, onPlaceOrder, isSubmitting = false }: PaymentMethodProps = $props();
 </script>
 
 <div
@@ -141,18 +142,20 @@
 		<div class="pt-2 flex gap-4">
 			<button
 				type="button"
+				disabled={isSubmitting}
 				class="flex-1 h-11 rounded-xl border border-gray-200 text-sm font-medium text-gray-800
-               bg-white hover:bg-gray-50 cursor-pointer"
+               bg-white hover:bg-gray-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
 				onclick={() => onBack?.()}
 			>
 				Back
 			</button>
 			<button
 				type="submit"
+				disabled={isSubmitting}
 				class="flex-1 h-11 rounded-xl bg-black text-white text-sm font-medium
-               hover:bg-black/90 active:bg-black/70 cursor-pointer"
+               hover:bg-black/90 active:bg-black/70 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
 			>
-				Place Order
+				{isSubmitting ? 'Processing...' : 'Place Order'}
 			</button>
 		</div>
 	</form>
