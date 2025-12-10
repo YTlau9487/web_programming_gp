@@ -1,5 +1,5 @@
 import { db } from './index';
-import { product, productImage, productDimensions, productReview, user, sellerProduct } from './schema';
+import { product, productImage, productDimensions, productReview, user, buyerOrder, orderItem } from './schema';
 import productsData from '$lib/data/products.json';
 import { hash } from 'argon2';
 import { eq } from 'drizzle-orm';
@@ -48,10 +48,21 @@ export async function seedProducts() {
 
     console.log('Starting product seed...');
 
+    // Get all sellers
+    const sellers = await db.select().from(user).where(eq(user.role, 'seller'));
+    if (sellers.length === 0) {
+      console.log('No sellers found, please seed users first');
+      return;
+    }
+
     for (const p of productsData.products) {
+      // Randomly assign product to a seller
+      const randomSeller = sellers[Math.floor(Math.random() * sellers.length)];
+
       // Insert product
       await db.insert(product).values({
         id: p.id,
+        sellerId: randomSeller.id,
         title: p.title,
         description: p.description,
         category: p.category,
@@ -69,8 +80,6 @@ export async function seedProducts() {
         minimumOrderQuantity: p.minimumOrderQuantity,
         barcode: p.meta.barcode,
         qrCode: p.meta.qrCode,
-        createdAt: new Date(p.meta.createdAt),
-        updatedAt: new Date(p.meta.updatedAt),
         thumbnail: p.thumbnail,
       });
 
@@ -109,37 +118,63 @@ export async function seedProducts() {
   }
 }
 
-export async function seedSellerProducts() {
+export async function seedOrders() {
   try {
-    const existingSellerProducts = await db.select().from(sellerProduct).limit(1);
-    if (existingSellerProducts.length > 0) {
-      console.log('Seller products already seeded, skipping...');
+    const existingOrders = await db.select().from(buyerOrder).limit(1);
+    if (existingOrders.length > 0) {
+      console.log('Orders already seeded, skipping...');
       return;
     }
 
-    console.log('Starting seller product assignment...');
+    console.log('Starting order seed...');
 
-    // Get all sellers and products
-    const sellers = await db.select().from(user).where(eq(user.role, 'seller'));
+    // Get all buyers
+    const buyers = await db.select().from(user).where(eq(user.role, 'buyer'));
     const products = await db.select().from(product);
 
-    if (sellers.length === 0 || products.length === 0) {
-      console.log('No sellers or products found');
+    if (buyers.length === 0 || products.length === 0) {
+      console.log('No buyers or products found');
       return;
     }
 
-    // Assign products to sellers (distribute products across sellers)
-    for (let i = 0; i < products.length; i++) {
-      const sellerIndex = i % sellers.length;
-      await db.insert(sellerProduct).values({
-        sellerId: sellers[sellerIndex].id,
-        productId: products[i].id,
-        createdAt: new Date(),
-      });
+    const orderStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+
+    // Create orders for each buyer covering all statuses with more data
+    for (const buyer of buyers) {
+      // Create 3 orders per status per buyer (15 orders per buyer total)
+      for (const status of orderStatuses) {
+        for (let i = 0; i < 3; i++) {
+          const orderId = await db.insert(buyerOrder).values({
+            buyerId: buyer.id,
+            fullName: buyer.username,
+            address: `${Math.floor(Math.random() * 1000)} Main St`,
+            city: 'New York',
+            state: 'NY',
+            zipCode: '10001',
+            phone: '555-' + Math.floor(Math.random() * 9000) + 1000,
+            cardNumber: '4532-' + Math.floor(Math.random() * 9000 + 1000) + '-' + Math.floor(Math.random() * 9000 + 1000) + '-' + Math.floor(Math.random() * 9000 + 1000),
+            orderStatus: status,
+          }).returning({ id: buyerOrder.id });
+
+          // Add 1-5 items per order
+          const itemCount = Math.floor(Math.random() * 5) + 1;
+          for (let j = 0; j < itemCount; j++) {
+            const randomProduct = products[Math.floor(Math.random() * products.length)];
+            const quantity = Math.floor(Math.random() * 5) + 1;
+
+            await db.insert(orderItem).values({
+              orderId: orderId[0].id,
+              productId: randomProduct.id,
+              quantity,
+              price: randomProduct.price,
+            });
+          }
+        }
+      }
     }
 
-    console.log('Seller product assignment completed successfully!');
+    console.log('Order seed completed successfully!');
   } catch (error) {
-    console.error('Error seeding seller products:', error);
+    console.error('Error seeding orders:', error);
   }
 }

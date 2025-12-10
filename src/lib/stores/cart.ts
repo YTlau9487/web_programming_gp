@@ -1,4 +1,6 @@
-import { writable } from 'svelte/store';
+// src/lib/stores/cart.ts
+import { writable, type Writable } from 'svelte/store';
+import { browser } from '$app/environment';
 
 export type ProductData = {
   id: number;
@@ -15,7 +17,33 @@ export type ProductData = {
 export type CartItem = ProductData & { quantity: number };
 
 function createCartStore() {
-  const { subscribe, update } = writable<CartItem[]>([]);
+  // 1) initial value: try to load from localStorage on client
+  let initial: CartItem[] = [];
+
+  if (browser) {
+    const stored = localStorage.getItem('cart');
+    if (stored) {
+      try {
+        initial = JSON.parse(stored) as CartItem[];
+      } catch (e) {
+        console.error('Failed to parse cart from localStorage', e);
+      }
+    }
+  }
+
+  const store: Writable<CartItem[]> = writable<CartItem[]>(initial);
+  const { subscribe, update, set } = store;
+
+  // 2) persist to localStorage whenever cart changes (client-side only)
+  if (browser) {
+    store.subscribe((items) => {
+      try {
+        localStorage.setItem('cart', JSON.stringify(items));
+      } catch (e) {
+        console.error('Failed to save cart to localStorage', e);
+      }
+    });
+  }
 
   return {
     subscribe,
@@ -37,13 +65,15 @@ function createCartStore() {
       update((items) =>
         items.map((i) =>
           i.id === id
-            ? { ...i, quantity: Math.max(1, i.quantity + delta) } // 不低於 1
+            ? { ...i, quantity: Math.max(1, i.quantity + delta) }
             : i
         )
       );
+    },
+    clear() {
+      set([]);
     }
   };
 }
-
 
 export const cart = createCartStore();

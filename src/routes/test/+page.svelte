@@ -1,25 +1,6 @@
 <script>
-  import CartItem from '$lib/components/CartItem.svelte';
-	import ShoppingBag from '~icons/lucide/shopping-bag';
-  
-  export let data;
-  
-  $: products = data.products || [];
+  import ManageProducts from "$lib/components/ManageProducts.svelte";
+  import EditProduct from "$lib/components/EditProduct.svelte";
 </script>
 
-<div class="drawer drawer-end">
-  <input id="my-drawer-5" type="checkbox" class="drawer-toggle" />
-  <div class="drawer-content">
-    <!-- Page content here -->
-    <label for="my-drawer-5" class="drawer-button btn btn-primary bg-black border-none shadow-none"><ShoppingBag/></label>
-  </div>
-  <div class="drawer-side">
-    <label for="my-drawer-5" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu bg-base-200 min-h-full w-120 p-4">
-      <!-- Sidebar content here -->
-      {#each products as product}
-        <CartItem {product} />
-      {/each}
-    </ul>
-  </div>
-</div>
+<EditProduct />
