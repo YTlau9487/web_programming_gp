@@ -26,9 +26,6 @@
 
 <SearchHeader bind:searchTerm />
 
-<div class="m-8">
-  <Tabs items={['pending', 'shipped', 'delivered']} />
-</div>
 
 <div class="flex flex-wrap justify-center gap-8">
   {#each filteredProducts as product}
