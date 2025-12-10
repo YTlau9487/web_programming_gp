@@ -1,7 +1,6 @@
 <script>
-  import ShippingInfo from "$lib/components/ShippingInfo.svelte";
-  import PaymentMethod from "$lib/components/PaymentMethod.svelte";
+  import ManageProducts from "$lib/components/ManageProducts.svelte";
+  import EditProduct from "$lib/components/EditProduct.svelte";
 </script>
 
-<!-- <ShippingInfo /> -->
- <PaymentMethod />
+<EditProduct />
