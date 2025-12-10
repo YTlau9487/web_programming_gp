@@ -101,12 +101,12 @@
     <div class="flex justify-end gap-2">
       <button type="button"
               class="px-4 py-2 rounded-md border text-sm font-medium text-gray-700 
-                     hover:bg-gray-100">
+                     hover:bg-gray-100/80 active:bg-gray-100/70 active:text-gray-700/70 cursor-pointer">
         Cancel
       </button>
       <button type="submit"
-              class="px-4 py-2 rounded-md bg-neutral-900 text-white text-sm font-medium 
-                     hover:bg-neutral-800 on:click={save}">
+              class="px-4 py-2 rounded-md bg-black text-white text-sm font-medium 
+                     hover:bg-black/80 active:bg-black/70 cursor-pointer on:click={save}">
         Update Product
       </button>
     </div>
@@ -115,8 +115,8 @@
   <!-- Close Button -->
   <button type="button" 
           class="absolute top-4 right-4 rounded opacity-70 hover:opacity-100 
-                 transition-opacity focus:ring-2 focus:ring-neutral-400">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 transition-opacity cursor-pointer">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 hover:opacity-80 active:opactiy-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6"/>
     </svg>
     <span class="sr-only">Close</span>
