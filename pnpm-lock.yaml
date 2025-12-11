@@ -45,9 +45,6 @@ importers:
       '@types/node':
         specifier: ^22.19.2
         version: 22.19.2
-      daisyui:
-        specifier: ^5.5.11
-        version: 5.5.11
       drizzle-kit:
         specifier: ^0.31.8
         version: 0.31.8
@@ -790,9 +787,6 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
-
-  daisyui@5.5.11:
-    resolution: {integrity: sha512-xQ1JIgYbhKe9DKhFtOWAKf91F1mK3HECa5xoINmSHMqW9KjEP+yOWttTN1K7zOwuDmk68CbovCDbMKLVtDmPBQ==}
 
   data-uri-to-buffer@4.0.1:
     resolution: {integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==}
@@ -1857,8 +1851,6 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
-
-  daisyui@5.5.11: {}
 
   data-uri-to-buffer@4.0.1: {}
 

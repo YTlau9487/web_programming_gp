@@ -1,26 +1,34 @@
-// src/routes/buyer/[id]/+page.server.ts
 import type { PageServerLoad, Actions } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { getProductById } from '$lib/server/db/queries';
 import { db } from '$lib/server/db';
-import { buyerOrder, orderItem, productReview, user } from '$lib/server/db/schema';
+import {
+  buyerOrder,
+  orderItem,
+  productReview,
+  user
+} from '$lib/server/db/schema';
 import { eq, and } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
   const productId = Number(params.id);
 
+  // Redirect if product id is invalid
   if (Number.isNaN(productId)) {
     throw redirect(302, '/buyer');
   }
 
+  // Fetch product details from DB
   const productData = await getProductById(productId);
 
+  // Redirect if product does not exist
   if (!productData) {
     throw redirect(302, '/buyer');
   }
 
   let hasPurchased = false;
 
+  // If logged-in buyer, check if they have ever purchased this product
   if (locals.user && locals.user.role === 'buyer') {
     const purchase = await db
       .select()
@@ -37,6 +45,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     hasPurchased = purchase.length > 0;
   }
 
+  // Provide product, user info and purchase flag to the page
   return {
     product: productData,
     user: locals.user,
@@ -46,7 +55,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 export const actions: Actions = {
   addComment: async ({ request, params, locals }) => {
-    // 必須是已登入 buyer
+    // Only logged-in buyers are allowed to add reviews
     if (!locals.user || locals.user.role !== 'buyer') {
       return { success: false, error: 'Not authorized' };
     }
@@ -58,13 +67,13 @@ export const actions: Actions = {
 
     const rating = Number(ratingStr);
 
-    // 基本驗證
+    // Basic validation for rating and comment
     if (!comment || !rating || rating < 1 || rating > 5) {
       return { success: false, error: 'Invalid input' };
     }
 
     try {
-      // 確認這個 buyer 有買過這個 product
+      // Ensure this buyer has purchased this product before reviewing
       const purchase = await db
         .select()
         .from(buyerOrder)
@@ -78,10 +87,13 @@ export const actions: Actions = {
         .limit(1);
 
       if (purchase.length === 0) {
-        return { success: false, error: 'You have not purchased this product' };
+        return {
+          success: false,
+          error: 'You have not purchased this product'
+        };
       }
 
-      // 查出完整 user（拿 email）
+      // Fetch full user record to get username and email
       const [fullUser] = await db
         .select()
         .from(user)
@@ -91,7 +103,7 @@ export const actions: Actions = {
         return { success: false, error: 'User not found' };
       }
 
-      // 寫入 product_review
+      // Insert new product review into product_review table
       await db.insert(productReview).values({
         productId,
         rating,
@@ -104,6 +116,7 @@ export const actions: Actions = {
       return { success: true };
     } catch (error) {
       console.error('Error adding comment:', error);
+      // Generic error response for unexpected failures
       return { success: false, error: 'Failed to add comment' };
     }
   }

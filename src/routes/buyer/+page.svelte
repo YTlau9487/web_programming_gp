@@ -16,14 +16,18 @@
 					const q = searchTerm.toLowerCase();
 					return p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
 				});
-
 </script>
 
-  <Header user={data.user} />
+<Header user={data.user} />
 
-  <SearchHeader bind:searchTerm />
+<SearchHeader bind:searchTerm />
 
-<div class="flex flex-wrap justify-center gap-8">
+<div
+	class="grid gap-8 px-4
+         sm:grid-cols-2
+         lg:grid-cols-3
+         xl:grid-cols-4"
+>
 	{#each filteredProducts as product}
 		<Product {product} />
 	{/each}

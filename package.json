@@ -26,7 +26,6 @@
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@tailwindcss/vite": "^4.1.17",
 		"@types/node": "^22.19.2",
-		"daisyui": "^5.5.11",
 		"drizzle-kit": "^0.31.8",
 		"drizzle-orm": "^0.44.7",
 		"prettier": "^3.7.4",

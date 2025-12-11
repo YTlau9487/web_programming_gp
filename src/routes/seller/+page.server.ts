@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw redirect(302, '/login');
 	}
 
-	// 產品列表（給 ManageProducts）
+	// Product List (for ManageProducts)
 	const sellerProducts = await db
 		.select()
 		.from(product)
@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		description: p.description
 	}));
 
-	// 訂單列表（給 OrderStatus）
+	// Order List (for OrderStatus)
 	const sellerOrders = await db
 		.select({
 			orderId: buyerOrder.id,

@@ -5,7 +5,7 @@ export const load: PageServerLoad = async ({ locals }) => {
   const products = await getAllProducts();
   
   return {
-    user: locals.user,               // from hooks.server.ts
+    user: locals.user,  // from hooks.server.ts
     products
   };
 };
