@@ -6,15 +6,18 @@
 	const { product } = $props<{ product: ProductData }>();
 </script>
 
-<div class="max-w-md bg-white rounded-3xl shadow-lg overflow-hidden">
+<div class="max-w-md bg-white rounded-3xl shadow-lg overflow-hidden h-full flex flex-col">
 	<img
 		src={product.thumbnail}
 		alt={product.title}
 		class="w-full max-h-60 object-contain bg-slate-100"
 	/>
 
-	<div class="p-6 space-y-3">
-		<span class="inline-block bg-slate-900 text-white text-xs font-semibold px-3 py-1 rounded-full">
+	<div class="p-6 space-y-3 flex flex-col flex-1">
+		<span
+			class="inline-flex items-center justify-center bg-slate-900 text-white
+         text-xs font-semibold px-3 py-0.5 rounded-full w-auto max-w-max"
+		>
 			{product.category}
 		</span>
 
@@ -41,7 +44,7 @@
 			</span>
 		</div>
 
-		<div class="pt-2 flex gap-3">
+		<div class="pt-2 flex gap-3 mt-auto">
 			<a
 				href={`/buyer/${product.id}`}
 				class="flex-1 border border-slate-200 rounded-2xl py-2.5 text-sm font-medium cursor-pointer text-slate-800 hover:bg-slate-50/90 active:bg-slate-50/50 text-center flex items-center justify-center"

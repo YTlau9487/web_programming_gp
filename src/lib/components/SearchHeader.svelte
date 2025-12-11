@@ -23,17 +23,17 @@
 	);
 
 	// Derived store to check if any cart item is out of stock or quantity exceeds stock
-	const hasOutOfStockItems = derived(
-		[cartItemsStore, productStockStore],
-		([$items, $stock]) => {
-			console.log('[SearchHeader] Checking stock. Items:', $items.map(i => ({ id: i.id, qty: i.quantity, stock: $stock.get(i.id) })));
-			return $items.some(item => {
-				const stock = $stock.get(item.id) ?? 0;
-				// Block if: stock is 0 OR cart quantity exceeds available stock
-				return stock <= 0 || item.quantity > stock;
-			});
-		}
-	);
+	const hasOutOfStockItems = derived([cartItemsStore, productStockStore], ([$items, $stock]) => {
+		console.log(
+			'[SearchHeader] Checking stock. Items:',
+			$items.map((i) => ({ id: i.id, qty: i.quantity, stock: $stock.get(i.id) }))
+		);
+		return $items.some((item) => {
+			const stock = $stock.get(item.id) ?? 0;
+			// Block if: stock is 0 OR cart quantity exceeds available stock
+			return stock <= 0 || item.quantity > stock;
+		});
+	});
 
 	// Fetch product stock on mount
 	onMount(async () => {
@@ -67,7 +67,9 @@
 
 	async function proceedToCheckout() {
 		if ($hasOutOfStockItems) {
-			alert('Cannot proceed: Some items in your cart are out of stock. Please remove them before checking out.');
+			alert(
+				'Cannot proceed: Some items in your cart are out of stock. Please remove them before checking out.'
+			);
 			return;
 		}
 		console.log('proceedToCheckout clicked'); // check if this logs
@@ -76,9 +78,9 @@
 	}
 </script>
 
-<header class="sticky top-0 z-51 bg-gray-50 border-b border-gray-200 mb-4">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<div class="flex items-center justify-between h-16">
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200">
+	<div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+		<div class="flex items-center justify-between h-22 sm:h-16">
 			<div class="flex-1 flex justify-center">
 				<SearchBar bind:searchTerm />
 			</div>
