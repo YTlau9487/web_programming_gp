@@ -35,26 +35,26 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 let seedRun = false;
 if (!seedRun) {
   seedRun = true;
-  console.log('🌱 Starting database seeding...');
+  console.log('Starting database seeding...');
   
   seedUsers()
     .then(() => {
-      console.log('✅ Users seeded, starting products...');
+      console.log('Users seeded, starting products...');
       return seedProducts();
     })
     .then(() => {
-      console.log('✅ Products seeded, starting orders...');
+      console.log('Products seeded, starting orders...');
       return seedOrders();
     })
     .then(() => {
-      console.log('✅ Orders seeded, starting alice_seller orders...');
+      console.log('Orders seeded, starting alice_seller orders...');
       return seedSellerOrders();
     })
     .then(() => {
-      console.log('✅ All seeding completed!');
+      console.log('All seeding completed!');
     })
     .catch(error => {
-      console.error('❌ Seeding error:', error);
+      console.error('Seeding error:', error);
     });
 }
 
