@@ -54,6 +54,7 @@
 			console.log('api deleteProduct response', res.status, result);
 
 			if (res.ok && result.success) {
+				// @ts-ignore
 				products = products.filter((p) => p.id !== id);
 				await invalidateAll();
 			} else {

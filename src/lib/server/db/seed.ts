@@ -234,7 +234,7 @@ export async function seedSellerOrders() {
         });
       }
 
-      console.log(`✅ Created ${status} order for alice_seller`);
+      console.log(`Created ${status} order for alice_seller`);
     }
 
     console.log('alice_seller orders seed completed successfully!');

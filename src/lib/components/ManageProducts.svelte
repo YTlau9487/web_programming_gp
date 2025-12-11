@@ -19,7 +19,6 @@
 	export let products: ManageProduct[] = [];
 
 	export let onAdd: (() => void) | undefined;
-	// 這裡放寬成 any，讓父層用甚麼型別都可以
 	export let onEdit: ((product: any) => void) | undefined;
 	export let onDelete: ((id: number) => void) | undefined;
 
