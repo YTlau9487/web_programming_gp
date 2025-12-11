@@ -3,13 +3,21 @@
 	import ProductDetail from '$lib/components/ProductDetail.svelte';
 	import CustomerReviews from '$lib/components/CustomerReviews.svelte';
 	import Comment from '$lib/components/Comment.svelte';
+	import AddComment from '$lib/components/AddComment.svelte';
 	import ArrowLeft from '~icons/lucide/arrow-left';
+	import { invalidateAll } from '$app/navigation';
+
 	export let data;
 	const product = data.product;
 	const reviews = product.reviews ?? [];
+	const hasPurchased = data.hasPurchased;
+
+	async function handleCommentSubmit() {
+		await invalidateAll();
+	}
 </script>
 
-<Header />
+<Header user={data.user} />
 
 <div class="bg-slate-50 min-h-screen">
   <div class="mx-auto max-w-5xl px-4 py-8 space-y-6">
@@ -29,6 +37,20 @@
 
     <CustomerReviews {product} />
 
+    <!-- Add Comment Section - Only show if buyer has purchased this product -->
+    {#if hasPurchased && data.user}
+      <AddComment on:submit={handleCommentSubmit} />
+    {:else if !data.user}
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+        <p class="text-blue-800 text-sm">Sign in to leave a review</p>
+      </div>
+    {:else if !hasPurchased}
+      <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+        <p class="text-gray-600 text-sm">You must purchase this product to leave a review</p>
+      </div>
+    {/if}
+
+    <!-- Existing Comments -->
     {#each reviews as r}
       <Comment
         reviewerName={r.reviewerName}
