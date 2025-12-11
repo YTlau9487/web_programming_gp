@@ -4,7 +4,7 @@
 	import LogIn from '~icons/lucide/log-in';
 
 	type HeaderUser = {
-		id: string;
+		id: number;
 		username: string;
 		role: string;
 	};
