@@ -1,16 +1,15 @@
-// src/routes/buyer/[id]/+page.ts
-import type { PageLoad } from './$types';
-import data from '$lib/data/products.json';
+// src/routes/buyer/[id]/+page.server.ts
+import type { PageServerLoad, Actions } from './$types';
+import { redirect } from '@sveltejs/kit';
 import { getProductById } from '$lib/server/db/queries';
 import { db } from '$lib/server/db';
-import { buyerOrder, orderItem, product, productReview } from '$lib/server/db/schema';
+import { buyerOrder, orderItem, productReview, user } from '$lib/server/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { redirect } from '@sveltejs/kit';
 
-export const load: PageLoad = async ({ params, locals }) => {
-  const productId = parseInt(params.id);
+export const load: PageServerLoad = async ({ params, locals }) => {
+  const productId = Number(params.id);
 
-  if (isNaN(productId)) {
+  if (Number.isNaN(productId)) {
     throw redirect(302, '/buyer');
   }
 
@@ -20,10 +19,9 @@ export const load: PageLoad = async ({ params, locals }) => {
     throw redirect(302, '/buyer');
   }
 
-  // Check if user is logged in and is a buyer
   let hasPurchased = false;
+
   if (locals.user && locals.user.role === 'buyer') {
-    // Check if this buyer has purchased this product
     const purchase = await db
       .select()
       .from(buyerOrder)
@@ -46,24 +44,27 @@ export const load: PageLoad = async ({ params, locals }) => {
   };
 };
 
-export const actions = {
+export const actions: Actions = {
   addComment: async ({ request, params, locals }) => {
-    // Check if user is logged in
+    // 必須是已登入 buyer
     if (!locals.user || locals.user.role !== 'buyer') {
       return { success: false, error: 'Not authorized' };
     }
 
-    const productId = parseInt(params.id);
-    const body = await request.json();
-    const { rating, comment } = body;
+    const productId = Number(params.id);
+    const form = await request.formData();
+    const ratingStr = form.get('rating')?.toString() ?? '';
+    const comment = (form.get('comment')?.toString() ?? '').trim();
 
-    // Validate input
+    const rating = Number(ratingStr);
+
+    // 基本驗證
     if (!comment || !rating || rating < 1 || rating > 5) {
       return { success: false, error: 'Invalid input' };
     }
 
     try {
-      // Verify buyer has actually purchased this product
+      // 確認這個 buyer 有買過這個 product
       const purchase = await db
         .select()
         .from(buyerOrder)
@@ -80,14 +81,24 @@ export const actions = {
         return { success: false, error: 'You have not purchased this product' };
       }
 
-      // Insert review
+      // 查出完整 user（拿 email）
+      const [fullUser] = await db
+        .select()
+        .from(user)
+        .where(eq(user.id, locals.user.id));
+
+      if (!fullUser) {
+        return { success: false, error: 'User not found' };
+      }
+
+      // 寫入 product_review
       await db.insert(productReview).values({
         productId,
         rating,
-        comment: comment.trim(),
+        comment,
         date: new Date(),
-        reviewerName: locals.user.username,
-        reviewerEmail: 'buyer@example.com' // You might want to store email in user table
+        reviewerName: fullUser.username,
+        reviewerEmail: fullUser.email
       });
 
       return { success: true };
