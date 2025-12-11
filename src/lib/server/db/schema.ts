@@ -2,6 +2,8 @@ import { integer, sqliteTable, text, real } from 'drizzle-orm/sqlite-core';
 import { nanoid } from 'nanoid';
 import { randomUUID } from 'crypto';
 
+/* Below is our complete database structure */
+
 export const user = sqliteTable('user', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   email: text('email').notNull().unique(),
